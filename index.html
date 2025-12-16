@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agua Kaphia — Prototipo Mejorado</title>
+
+  <!-- Bootstrap CSS (CDN version stable) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Paleta nueva: Azul profundo, agua, verde suave -->
+  <style>
+    :root{
+      --brand-500:#0b5ed7; /* azul profundo */
+      --brand-400:#2f8fd6; /* azul agua */
+      --accent:#19b3a3;    /* verde agua */
+      --muted:#6c757d;
+      --bg:#bfd7dd;
+      --card:#b0e2e6;
+    }
+
+    /* Reset rápido */
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:#222; -webkit-font-smoothing:antialiased}
+
+    /* Navbar */
+    .navbar-brand{font-weight:700; letter-spacing:0.2px}
+
+    /* Hero */
+    .carousel-item img{height:60vh; object-fit:cover; width:100%}
+
+    /* Section titles */
+    .section-title{color:var(--brand-500); margin-bottom:1rem}
+
+    /* Cards */
+    .card{border-radius:12px; background:var(--card); overflow:hidden}
+    .card-img-top{height:240px; object-fit:cover}
+
+    /* Buttons */
+    .btn-primary{background:var(--brand-500); border-color:var(--brand-500)}
+    .btn-accent{background:var(--accent); border-color:var(--accent); color:#fff}
+
+    /* Logo */
+    .logo{display:inline-flex;align-items:center;gap:.5rem}
+    .logo svg{height:34px;width:34px}
+
+    /* Animations: simple fade/slide/zoom using intersection observer */
+    .reveal{opacity:0; transform:translateY(20px); transition:all .7s cubic-bezier(.2,.9,.3,1)}
+    .reveal.visible{opacity:1; transform:none}
+    .zoom-on-hover{transition:transform .25s ease; will-change:transform}
+    .zoom-on-hover:hover{transform:scale(1.04)}
+
+    /* Small screens tweaks */
+    @media (max-width:576px){
+      .carousel-item img{height:40vh}
+      .card-img-top{height:200px}
+    }
+
+    /* Cart badge */
+    .cart-badge{position:absolute; top:6px; right:6px; background:#dc3545; color:#fff; border-radius:50%; padding:2px 7px; font-size:12px}
+
+    /* Admin panel quick style */
+    #adminPanel{display:none;}
+    #adminPanel.active{display:block}
+
+    /* Performance helpers */
+    img{display:block; max-width:100%}
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR con Logo SVG y carrito -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <!-- SVG simple como logo -->
+        <span class="logo">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="g" x1="0" x2="1">
+                <stop offset="0" stop-color="#19b3a3"/>
+                <stop offset="1" stop-color="#2f8fd6"/>
+              </linearGradient>
+            </defs>
+            <circle cx="32" cy="32" r="30" fill="url(#g)" />
+            <path d="M20 38c2-6 8-10 12-10s10 4 12 10" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="32" cy="24" r="4" fill="#fff" />
+          </svg>
+          <strong style="color:var(--brand-500)">Agua Kaphia</strong>
+        </span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          <li class="nav-item"><a class="nav-link" href="#inicio">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="#productos">Productos</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+          <li class="nav-item position-relative ms-3">
+            <button id="openCartBtn" class="btn btn-outline-primary">Carrito 🛒 <span id="cartCount" class="cart-badge" style="display:none">0</span></button>
+          </li>
+          <li class="nav-item ms-2">
+            <button id="openAdminBtn" class="btn btn-link text-muted">Admin</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO / CAROUSEL (fade) -->
+  <section id="inicio" class="pt-3">
+    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="c:\Users\andre\AppData\Local\Packages\5319275A.WhatsAppDesktop_cv1g1gvanyjgm\LocalState\sessions\2CCCC8267A892B200A75DD35B3967756A02E635E\transfers\2025-51\WhatsApp Image 2025-12-16 at 10.41.45.jpeg" class="d-block w-100" alt="Hero 1" loading="lazy">
+          <div class="carousel-caption d-none d-md-block">
+            <h2 class="fw-bold">         </h2>
+            <p>Calidad, servicio y confianza — Kaphia.</p>
+            <a href="#productos" class="btn btn-accent">Ver productos</a>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img src="c:\Users\andre\AppData\Local\Packages\5319275A.WhatsAppDesktop_cv1g1gvanyjgm\LocalState\sessions\2CCCC8267A892B200A75DD35B3967756A02E635E\transfers\2025-51\WhatsApp Image 2025-12-16 at 10.44.30.jpeg" class="d-block w-100" alt="Hero 2" loading="lazy">
+          <div class="carousel-caption d-none d-md-block">
+            <h2 class="fw-bold">----------</h2>
+            <p>Precios especiales por tiempo limitado.</p>
+            <a href="#productos" class="btn btn-primary">Comprar ahora</a>
+          </div>
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+      <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+    </div>
+  </section>
+
+  <!-- PRODUCTOS: catálogo dinámico con carrito básico -->
+  <section id="productos" class="my-5">
+    <div class="container">
+       <h3   class="section-title text-center"> <strong>CATÁLOGO </strong></h3>
+
+      <div class="row g-4" id="productGrid">
+        <!-- Productos renderizados por JS -->
+      </div>
+    </div>
+  </section>
+
+
+  </section>
+
+  <!-- CONTACTO & MAPA -->
+  <section id="contacto" class="my-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 reveal">
+          <h4>Contáctanos</h4>
+          <p>Haz clic en WhatsApp para solicitar catálogo o coordinar entregas.</p>
+          <a class="btn btn-outline-success" href="https://wa.me/51910239496" target="_blank">Abrir WhatsApp</a>
+        </div>
+        <div class="col-md-6 reveal">
+          <h4>Nuestra ubicación</h4>
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3830.4356179555534!2d-69.0972761!3d-16.249429300000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x915c32829c4725f1%3A0x37e24c8fd800e46f!2sJir%C3%B3n%20Arica%20936%2C%20Yunguyo%2021546!5e0!3m2!1ses-419!2spe!4v1734042463587!5m2!1ses-419!2spe" width="100%" height="260" style="border:0;" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMIN PANEL (simple) -->
+  <section id="adminPanel" class="my-5 container">
+    <div class="card p-3">
+      <h4>Panel Administrativo (Demo)</h4>
+      <p>Accede para ver estadísticas del carrito y listado de pedidos (demo local).</p>
+      <div id="adminContent"></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="mt-5 bg-white py-4 border-top">
+    <div class="container text-center">
+      <small>&copy; 2025 Agua de Mesa Kaphia — Prototipo</small>
+    </div>
+  </footer>
+
+  <!-- CART MODAL -->
+  <div class="modal fade" id="cartModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Tu carrito</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="cartBody">
+          <!-- items -->
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Seguir comprando</button>
+          <button id="checkoutBtn" class="btn btn-primary">Realizar pago</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS: datos, carrito, animaciones, admin -->
+  <script>
+    // Producto demo (podrías reemplazar por fetch a API)
+    const PRODUCTS = [
+      {id:1, name:'Botella 330 ml', price:1.00, img:'https://scontent.ftnm1-1.fna.fbcdn.net/v/t39.30808-6/599831830_1211846590865281_6343656877018433639_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeHPEMQ10lKLDWy4mb_14glsUFvOnY1u1v1QW86djW7W_bKd2lPLX-3b9ltuiRT6aAvP1Cra5R_0__2p2xomt3zN&_nc_ohc=YsMiRAhjco4Q7kNvwE33Zc5&_nc_oc=AdmjkkknKTxRg8kVdqY3cBAuslTY2i08-E5a_AbLgg5A0xPmTl2jYxImIgNocNu60xh0q7Be-TMN8LfvHCMPsttb&_nc_zt=23&_nc_ht=scontent.ftnm1-1.fna&_nc_gid=xATBM3_ErNw8bf5TRutJTA&oh=00_AfnixHvQRd5HnIAb5jlEJHZgPeHz5w0W4nVy_1DjLaj6uQ&oe=69475F03'},
+      {id:2, name:'Botella 530 ml', price:2.50, img:'  https://scontent.ftnm1-1.fna.fbcdn.net/v/t39.30808-6/600286366_1211847387531868_1391195047858665827_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeEV_HNK7F3_XJHnQmlhVAbUsHHJcr_Hju6wcclyv8eO7qWffNY7aeaMrTeG9nQPFyVglD4u-5ojwNbdXHEGRequ&_nc_ohc=KOdKAiGZ7eoQ7kNvwGM3V0a&_nc_oc=Adk346uj7t1tmENKPuKbSl8ORGAhapZohA-rJuJxXUN85oOV3siyXnQgGuYxidbPHSrOZoDKgrlb2I2RMNjW5zH8&_nc_zt=23&_nc_ht=scontent.ftnm1-1.fna&_nc_gid=PDyHSu2MvIdOXhq2DvQ79A&oh=00_Afkl4iPF-WkA329SZpPYAyoVyG2xvxLIN8mvfLhEkoYtyg&oe=694762DE   '},
+      {id:3, name:'Botellón 750 ml' , price:3.00, img:'  https://scontent.ftnm1-1.fna.fbcdn.net/v/t39.30808-6/600476484_1211849170865023_6841725526373871422_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=110&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeG6_5BW23gilxS140KPuuDWBrkudhuzAQYGuS52G7MBBpUXwkOZVcM_9QtSyI1mkafV9TKedb0TJt-1WHwLA8Xp&_nc_ohc=LInSsTC1wXYQ7kNvwF20L-o&_nc_oc=AdmBJXJdZOK6Vzhsb5rtHjmvMowpP5HmZ2eKE1u9p4Asexejguww1D00SA5hRA7DfPKjQUbOMJeJXmlkcWK0NKP_&_nc_zt=23&_nc_ht=scontent.ftnm1-1.fna&_nc_gid=j_wUggP0AcqVWJDDZuqDAA&oh=00_Afm4pe-UJSodhZDIQ3prEpwOYOv6QYFOGzzVWQgh57Cvtw&oe=6947481F  '}
+    ];
+
+    // Simple cart using localStorage
+    const CART_KEY = 'kaphia_cart_v1';
+    let cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+
+    function saveCart(){ localStorage.setItem(CART_KEY, JSON.stringify(cart)); updateCartUI(); }
+    function updateCartUI(){
+      const count = cart.reduce((s,i)=>s+i.qty,0);
+      const badge = document.getElementById('cartCount');
+      if(!badge) return;
+      if(count>0){ badge.style.display='inline-block'; badge.textContent = count; } else { badge.style.display='none'; }
+    }
+
+    function renderProducts(){
+      const grid = document.getElementById('productGrid');
+      grid.innerHTML = '';
+      PRODUCTS.forEach(p=>{
+        const col = document.createElement('div'); col.className='col-md-4 reveal';
+        col.innerHTML = `
+          <div class="card h-100 zoom-on-hover">
+            <img src="${p.img}" class="card-img-top" alt="${p.name}" loading="lazy">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">${p.name}</h5>
+              <p class="mt-auto fw-bold text-success">S/. ${p.price.toFixed(2)}</p>
+              <div class="mt-3">
+                <button class="btn btn-primary" onclick="addToCart(${p.id})">Agregar al carrito</button>
+              </div>
+            </div>
+          </div>`;
+        grid.appendChild(col);
+      });
+    }
+
+    function addToCart(id){
+      const prod = PRODUCTS.find(p=>p.id===id);
+      const item = cart.find(i=>i.id===id);
+      if(item) item.qty += 1; else cart.push({id:id, name:prod.name, price:prod.price, qty:1});
+      saveCart();
+      // show modal
+      const modal = new bootstrap.Modal(document.getElementById('cartModal'));
+      renderCartBody();
+      modal.show();
+    }
+
+    function renderCartBody(){
+      const body = document.getElementById('cartBody');
+      if(cart.length===0){ body.innerHTML = '<p>Tu carrito está vacío.</p>'; return; }
+      let html = '<ul class="list-group">';
+      cart.forEach(i=>{
+        html += `<li class="list-group-item d-flex justify-content-between align-items-center">
+          <div><strong>${i.name}</strong><br><small>Cantidad: ${i.qty}</small></div>
+          <div>
+            <span class="badge bg-light text-dark">S/. ${(i.price*i.qty).toFixed(2)}</span>
+            <div class="mt-2">
+              <button class="btn btn-sm btn-outline-secondary" onclick="changeQty(${i.id}, -1)">-</button>
+              <button class="btn btn-sm btn-outline-secondary" onclick="changeQty(${i.id}, 1)">+</button>
+              <button class="btn btn-sm btn-danger" onclick="removeItem(${i.id})">Eliminar</button>
+            </div>
+          </div>
+        </li>`;
+      });
+      html += '</ul>';
+      const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+      html += `<div class="mt-3 text-end"><strong>Total: S/. ${total.toFixed(2)}</strong></div>`;
+      body.innerHTML = html;
+    }
+
+    function changeQty(id, delta){
+      const item = cart.find(i=>i.id===id); if(!item) return;
+      item.qty += delta; if(item.qty<=0) cart = cart.filter(x=>x.id!==id);
+      saveCart(); renderCartBody();
+    }
+    function removeItem(id){ cart = cart.filter(x=>x.id!==id); saveCart(); renderCartBody(); }
+
+    // Checkout simulation
+    document.getElementById('checkoutBtn').addEventListener('click', ()=>{
+      if(cart.length===0){ alert('El carrito está vacío'); return; }
+      alert('Pago simulado completado. Gracias por tu compra!');
+      cart = []; saveCart(); renderCartBody();
+      bootstrap.Modal.getInstance(document.getElementById('cartModal')).hide();
+    });
+
+    // Admin quick access (demo: password = "admin123")
+    document.getElementById('openAdminBtn').addEventListener('click', ()=>{
+      const pass = prompt('Ingrese contraseña de administrador:');
+      if(pass === 'admin123'){
+        document.getElementById('adminPanel').classList.add('active');
+        showAdmin();
+        window.scrollTo({top: document.getElementById('adminPanel').offsetTop-20, behavior:'smooth'});
+      } else if(pass !== null){ alert('Contraseña incorrecta'); }
+    });
+
+    function showAdmin(){
+      const admin = document.getElementById('adminContent');
+      const totalOrders = Math.ceil(Math.random()*10); // demo
+      const cartSummary = cart.map(i=>`${i.qty} x ${i.name}`).join(', ') || '—';
+      admin.innerHTML = `
+        <p>Pedidos simulados hoy: <strong>${totalOrders}</strong></p>
+        <p>Estado del carrito actual: <strong>${cartSummary}</strong></p>
+        <p>Total en carrito: <strong>S/. ${cart.reduce((s,i)=>s+i.price*i.qty,0).toFixed(2)}</strong></p>
+      `;
+    }
+
+    // IntersectionObserver para animaciones "reveal"
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
+    },{threshold:0.15});
+
+    function initReveals(){ document.querySelectorAll('.reveal').forEach(el=>io.observe(el)); }
+
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', ()=>{
+      renderProducts();
+      updateCartUI();
+      initReveals();
+
+      // Delegar botón carrito para abrir modal
+      document.getElementById('openCartBtn').addEventListener('click', ()=>{
+        renderCartBody();
+        const modal = new bootstrap.Modal(document.getElementById('cartModal'));
+        modal.show();
+      });
+
+      // Performance: preconnect to common domains
+      const link = document.createElement('link'); link.rel='preconnect'; link.href='https://apicompuplaza.compuplaza.net.pe'; document.head.appendChild(link);
+    });
+
+  </script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+
+
+<!-- ==========================================
+     INTEGRACIÓN CON API MOCK + PERSISTENCIA
+     (Backend: Node.js + Express + lowdb)
+     ========================================== -->
+
+<!-- Backend: server.js (colocar en carpeta backend/) -->
+<!--
+Contenido de backend/server.js
+-->
+<!--
+const express = require('express');
+const cors = require('cors');
+const { Low, JSONFile } = require('lowdb');
+const { nanoid } = require('nanoid');
+const path = require('path');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// DB (lowdb)
+const file = path.join(__dirname, 'db.json');
+const adapter = new JSONFile(file);
+const db = new Low(adapter);
+
+async function initDB(){
+  await db.read();
+  db.data ||= { products: [], carts: [], orders: [] };
+  // Seed products if empty
+  if(db.data.products.length === 0){
+    db.data.products.push(
+      {id:1, name:'Botella 500 ml', price:1.00, img:'/images/500ml.webp'},
+      {id:2, name:'Botella 1 L', price:4.50, img:'/images/1l.webp'},
+      {id:3, name:'Botellón 20 L', price:10.00, img:'/images/20l.webp'}
+    );
+    await db.write();
+  }
+}
+
+// Endpoints
+app.get('/api/products', async (req,res)=>{
+  await db.read();
+  res.json(db.data.products);
+});
+
+// Cart endpoints (simple persistence)
+app.post('/api/cart', async (req,res)=>{
+  await db.read();
+  const { items } = req.body; // items: [{id, qty}]
+  const id = nanoid(8);
+  const cart = { id, items, createdAt: Date.now() };
+  db.data.carts.push(cart);
+  await db.write();
+  res.json(cart);
+});
+
+app.get('/api/cart/:id', async (req,res)=>{
+  await db.read();
+  const cart = db.data.carts.find(c=>c.id===req.params.id);
+  if(!cart) return res.status(404).json({error:'Cart not found'});
+  res.json(cart);
+});
+
+// Checkout -> create order
+app.post('/api/checkout', async (req,res)=>{
+  await db.read();
+  const { cartId, customer } = req.body; // customer: {name, phone}
+  const cart = db.data.carts.find(c=>c.id===cartId);
+  if(!cart) return res.status(400).json({error:'Invalid cart'});
+  const order = { id: nanoid(10), cart, customer, status:'created', createdAt:Date.now() };
+  db.data.orders.push(order);
+  await db.write();
+  res.json(order);
+});
+
+// Admin: list orders
+app.get('/api/admin/orders', async (req,res)=>{
+  await db.read();
+  res.json(db.data.orders);
+});
+
+// Static for images (if you place /backend/images)
+app.use('/images', express.static(path.join(__dirname,'images')));
+
+const PORT = process.env.PORT || 4000;
+initDB().then(()=>{
+  app.listen(PORT, ()=>console.log('API running on', PORT));
+});
+-->
+
+<!-- package.json -->
+<!--
+{
+  "name": "kaphia-backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "lowdb": "^5.0.0",
+    "nanoid": "^4.0.0"
+  }
+}
+-->
+
+<!-- Instrucciones para levantar el backend -->
+<!--
+1. Crear carpeta backend/ y dentro pegar server.js y package.json.
+2. Colocar imágenes en backend/images/ con nombres 500ml.webp, 1l.webp, 20l.webp o actualizar rutas.
+3. Ejecutar:
+   cd backend
+   npm install
+   npm run start
+4. API disponible en http://localhost:4000/api/
+-->
+
+<!-- Frontend: cambios principales -->
+<!-- Reemplaza la sección PRODUCTS/JS para que consuma la API -->
+<!-- Sustituir la constante PRODUCTS y renderProducts() por fetch desde /api/products -->
+
+<!-- Ejemplo de integración en el frontend (usar fetch) -->
+<!--
+async function fetchProducts(){
+  const resp = await fetch('http://localhost:4000/api/products');
+  const data = await resp.json();
+  return data;
+}
+
+async function renderProducts(){
+  const grid = document.getElementById('productGrid');
+  grid.innerHTML = '';
+  const products = await fetchProducts();
+  products.forEach(p=>{
+    const col = document.createElement('div'); col.className='col-md-4 reveal';
+    col.innerHTML = `...`;
+    grid.appendChild(col);
+  });
+}
+
+// Para crear un cart persistente en servidor:
+async function saveCartServer(items){
+  const resp = await fetch('http://localhost:4000/api/cart', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({items})});
+  return await resp.json(); // {id,...}
+}
+
+// Para pagar (checkout):
+async function checkoutServer(cartId, customer){
+  const resp = await fetch('http://localhost:4000/api/checkout', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({cartId, customer})});
+  return await resp.json();
+}
+-->
+
+<!-- NOTAS DE DESPLIEGUE y seguridad -->
+<!--
+- En producción: mover a servidor seguro, habilitar HTTPS y usar variables de entorno.
+- No usar contraseñas en frontend; implementar auth para admin.
+- Reemplazar lowdb con Postgres o MySQL para escalabilidad.
+-->
+
+</html>
